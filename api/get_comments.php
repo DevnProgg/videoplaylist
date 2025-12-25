@@ -24,8 +24,8 @@ if (empty($video_path)) {
     exit();
 }
 
-// --- Database Connection ---
-$conn = require_once '../../includes/db.php';
+// Database Connection
+$conn = require_once __DIR__ . '/../includes/db.php';
 
 try {
     // Query comments table with JOIN to users table

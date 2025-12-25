@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';
 
-// --- Input Validation ---
+//Input Validation
 if (empty($username)) {
     $response['message'] = 'Username cannot be empty.';
     http_response_code(400);
@@ -47,11 +47,11 @@ if (empty($password)) {
     exit();
 }
 
-// --- Database Connection ---
-$conn = require_once '../../includes/db.php';
+// Database Connection
+$conn = require_once __DIR__ . '/../includes/db.php';
 
 try {
-    // --- Check if username already exists ---
+    // Check if username already exists
     $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error);
@@ -69,10 +69,10 @@ try {
     }
     $stmt->close();
 
-    // --- Hash Password ---
+    // Hash Password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // --- Insert User into Database ---
+    // Insert User into Database
     $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error);

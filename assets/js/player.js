@@ -3,7 +3,7 @@ $(document).ready(function() {
     var playlist = $('.playlist');
     var commentSection = $('.comment-section'); // Get the comment section container
 
-    // --- Function to format MySQL timestamp to human-readable time ago ---
+    // Function to format MySQL timestamp to human-readable time ago 
     function formatTime(timestamp) {
         // Convert MySQL timestamp (YYYY-MM-DD HH:MM:SS) to JavaScript Date object
         var date = new Date(timestamp.replace(/-/g, '/')); // Replace - with / for better browser compatibility
@@ -34,13 +34,13 @@ $(document).ready(function() {
         return Math.floor(seconds) + " seconds ago";
     }
 
-    // --- Function to load comments for a given video path ---
+    // Function to load comments for a given video path
     function loadComments(videoPath) {
         var commentsList = commentSection.find('.comments-list');
         commentsList.empty().append('<p>Loading comments...</p>'); // Clear and show loading
 
         $.ajax({
-            url: 'api/get_comments.php',
+            url: '/videoplaylist/api/v1/comments',
             type: 'GET',
             dataType: 'json',
             data: { video_path: videoPath },
@@ -81,7 +81,7 @@ $(document).ready(function() {
         });
     }
 
-    // --- Function to play video, highlight item, and load comments ---
+    // Function to play video, highlight item, and load comments
     window.playVideo = function(videoPath) {
         videoPlayer.attr('src', videoPath);
         videoPlayer[0].load(); // Load the new video source
@@ -95,12 +95,12 @@ $(document).ready(function() {
         loadComments(videoPath);
     };
 
-    // --- Logout Functionality ---
+    //  Logout Functionality 
     $('#logout-btn').on('click', function(e) {
         e.preventDefault();
 
         $.ajax({
-            url: 'api/logout.php',
+            url: '/videoplaylist/api/v1/logout',
             type: 'POST',
             dataType: 'json',
             success: function(response) {
@@ -117,10 +117,10 @@ $(document).ready(function() {
         });
     });
 
-    // --- Playlist Functionality ---
+    // Playlist Functionality
     // Fetch videos and populate playlist
     $.ajax({
-        url: 'api/get_videos.php',
+        url: '/videoplaylist/api/v1/videos',
         type: 'GET',
         dataType: 'json',
         success: function(response) {
@@ -154,7 +154,7 @@ $(document).ready(function() {
         playVideo(videoPath);
     });
 
-    // --- Autoplay next video in playlist ---
+    // Autoplay next video in playlist
     videoPlayer.on('ended', function() {
         var currentActiveItem = playlist.find('.playlist-item.active');
         var nextItem = currentActiveItem.next('.playlist-item');
@@ -169,7 +169,7 @@ $(document).ready(function() {
         }
     });
 
-    // --- Comment Submission Functionality ---
+    //Comment Submission Functionality
     $('#submit-comment').on('click', function() {
         var commentText = $('#comment-text').val();
         var videoPath = videoPlayer.attr('src'); // Get current video path from the player
@@ -185,7 +185,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: 'api/add_comment.php',
+            url: '/videoplaylist/api/v1/comment/add',
             type: 'POST',
             dataType: 'json',
             data: {
@@ -208,7 +208,7 @@ $(document).ready(function() {
         });
     });
 
-    // --- Character Counter for Comment Textarea ---
+    // Character Counter for Comment Textarea
     $('#comment-text').on('input', function() {
         var currentLength = $(this).val().length;
         var maxLength = 500;
@@ -226,7 +226,7 @@ $(document).ready(function() {
         }
     });
 
-    // --- Edit Comment Functionality (Event Delegation) ---
+    // Edit Comment Functionality (Event Delegation)
     $(document).on('click', '.edit-comment-btn', function() {
         var $commentItem = $(this).closest('.comment-item');
         var commentId = $commentItem.data('comment-id');
@@ -265,7 +265,7 @@ $(document).ready(function() {
             }
 
             $.ajax({
-                url: 'api/update_comment.php',
+                url: '/videoplaylist/api/v1/comment/update',
                 type: 'POST',
                 dataType: 'json',
                 data: {
@@ -294,7 +294,7 @@ $(document).ready(function() {
         });
     });
 
-    // --- Delete Comment Functionality (Event Delegation) ---
+    //  Delete Comment Functionality (Event Delegation) 
     $(document).on('click', '.delete-comment-btn', function() {
         var $commentItem = $(this).closest('.comment-item');
         var commentId = $commentItem.data('comment-id');
@@ -302,7 +302,7 @@ $(document).ready(function() {
 
         if (confirm('Are you sure you want to delete this comment?')) {
             $.ajax({
-                url: 'api/delete_comment.php',
+                url: '/videoplaylist/api/v1/comment/delete',
                 type: 'POST',
                 dataType: 'json',
                 data: {
@@ -323,10 +323,10 @@ $(document).ready(function() {
         }
     });
 
-    // --- Session Check Functionality (every 5 minutes) ---
+    //  Session Check Functionality (every 5 minutes)
     setInterval(function() {
         $.ajax({
-            url: 'api/check_session.php',
+            url: '/videoplaylist/api/v1/check_session',
             type: 'GET',
             dataType: 'json',
             success: function(response) {
@@ -338,8 +338,8 @@ $(document).ready(function() {
             },
             error: function(xhr, status, error) {
                 console.error("Session check AJAX Error:", status, error, xhr.responseText);
-                // Optionally, could redirect to login here as well if session check API is unreachable
-                // window.location.href = 'index.php';
+                //redirect to login here as well if session check API is unreachable
+                window.location.href = '/videoplaylist/auth/';
             }
         });
     }, 300000); // 300000 milliseconds = 5 minutes

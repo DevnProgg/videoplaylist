@@ -36,7 +36,7 @@ $comment_id = $_POST['comment_id'] ?? '';
 $comment_text = $_POST['comment_text'] ?? '';
 $user_id = $_SESSION['user_id'];
 
-// --- Input Validation ---
+//Input Validation
 if (empty($comment_id)) {
     $response['message'] = 'Comment ID cannot be empty.';
     http_response_code(400);
@@ -58,11 +58,11 @@ if (strlen($comment_text) > 500) {
     exit();
 }
 
-// --- Database Connection ---
-$conn = require_once '../../includes/db.php';
+// Database Connection
+$conn = require_once __DIR__ . '/../includes/db.php';
 
 try {
-    // --- Check if comment belongs to current user ---
+    // Check if comment belongs to current user
     $stmt = $conn->prepare("SELECT user_id FROM comments WHERE id = ?");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error);
@@ -89,7 +89,7 @@ try {
         exit();
     }
 
-    // --- Update Comment in Database ---
+    // Update Comment in Database
     $stmt = $conn->prepare("UPDATE comments SET comment_text = ? WHERE id = ? AND user_id = ?");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error);

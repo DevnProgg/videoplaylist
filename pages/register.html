@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="login-container"> <!-- Reusing login-container class for similar styling -->
+        <div class="login-card">
+            <div class="login-header">
+                <h2>Create an Account</h2>
+                <p>Register to start watching videos</p>
+            </div>
+            <div id="register-error-message" style="color: red; margin-bottom: 10px; display: none;"></div>
+            <form action="#" method="POST">
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="username" name="username" required>
+                        <label for="username">Username</label>
+                        <div class="focus-border"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-wrapper password-wrapper">
+                        <input type="password" id="password" name="password" required>
+                        <label for="password">Password</label>
+                        <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                            <span class="eye-icon"></span>
+                        </button>
+                        <div class="focus-border"></div>
+                    </div>
+                </div>
+                <button type="submit" id="register-btn" class="btn login-btn">
+                    <span class="btn-text">Register</span>
+                </button>
+            </form>
+            <p class="signup-link">Already have an account? <a href="/videoplaylist/auth/login">Login here</a></p>
+        </div>
+    </div>
+    <script src="../assets/js/register.js"></script> 
+</body>
+</html>

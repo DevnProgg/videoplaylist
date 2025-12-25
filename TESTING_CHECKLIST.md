@@ -1,0 +1,14 @@
+- [ ] Can register new user
+- [ ] Can login with correct credentials
+- [ ] Login fails with wrong password
+- [ ] Redirects to login if not authenticated
+- [ ] Videos load in playlist
+- [ ] Clicking video plays it
+- [ ] Next video auto-plays after current ends
+- [ ] Can post comment when logged in
+- [ ] Comment appears immediately after posting
+- [ ] Can edit own comments
+- [ ] Can delete own comments
+- [ ] Cannot edit/delete other users' comments
+- [ ] Character counter updates while typing
+- [ ] Logout works correctly

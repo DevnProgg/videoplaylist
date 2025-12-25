@@ -36,7 +36,7 @@ $video_path = $_POST['video_path'] ?? '';
 $comment_text = trim($_POST['comment_text'] ?? '');
 $user_id = $_SESSION['user_id'];
 
-// --- Input Validation ---
+// Input Validation
 if (empty($video_path)) {
     $response['message'] = 'Video path cannot be empty.';
     http_response_code(400);
@@ -58,11 +58,11 @@ if (strlen($comment_text) > 500) {
     exit();
 }
 
-// --- Database Connection ---
-$conn = require_once '../../includes/db.php';
+//Database Connection
+$conn = require_once __DIR__ . '/../includes/db.php';
 
 try {
-    // --- Insert Comment into Database ---
+    // Insert Comment into Database
     $stmt = $conn->prepare("INSERT INTO comments (video_path, user_id, comment_text) VALUES (?, ?, ?)");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error);

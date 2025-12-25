@@ -10,7 +10,7 @@ $(document).ready(function() {
         errorMessageContainer.empty().hide();
 
         $.ajax({
-            url: 'api/login.php',
+            url: '/videoplaylist/api/v1/login',
             type: 'POST',
             dataType: 'json', // Expect a JSON response
             data: {
@@ -20,28 +20,46 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     // Redirect on successful login
-                    window.location.href = 'player.php';
+                    window.location.href = '/videoplaylist/'; // Assuming player.php is the correct redirect
                 } else {
-                    // Show error message from the backend
-                    errorMessageContainer.text(response.message).show();
+                    if (response.suggest_signup) {
+                        if (confirm(response.message)) {
+                            // User chose to sign up
+                            window.location.href = '/videoplaylist/aut/register'; 
+                        } else {
+                            // User chose not to sign up, just show the message as if they clicked cancel
+                            errorMessageContainer.text('Please try logging in again, or consider signing up.').show();
+                        }
+                    } else {
+                        // Show regular error message from the backend
+                        errorMessageContainer.text(response.message).show();
+                    }
                 }
             },
             error: function(xhr, status, error) {
-                // Handle AJAX error (e.g., network issues, server errors)
+                // Handle AJAX error
                 var errorMsg = 'An unexpected error occurred. Please try again.';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMsg = xhr.responseJSON.message;
-                } else if (xhr.responseText) {
-                    try {
-                        var jsonResponse = JSON.parse(xhr.responseText);
-                        if (jsonResponse.message) {
-                            errorMsg = jsonResponse.message;
-                        }
-                    } catch (e) {
-                        // Fallback to generic message if responseText is not valid JSON
-                    }
+                // Try to parse the response even on error to check for suggest_signup
+                var jsonResponse = null;
+                try {
+                    jsonResponse = JSON.parse(xhr.responseText);
+                } catch (e) {
+                    // Not valid JSON, fall through to generic error
                 }
-                errorMessageContainer.text(errorMsg).show();
+
+                if (jsonResponse && jsonResponse.suggest_signup) {
+                    if (confirm(jsonResponse.message)) {
+                        window.location.href = '/videoplaylist/auth/register'; // Redirect to registration page
+                    } else {
+                        errorMessageContainer.text('Please try logging in again, or consider signing up.').show();
+                    }
+                } else if (jsonResponse && jsonResponse.message) {
+                    errorMsg = jsonResponse.message;
+                    errorMessageContainer.text(errorMsg).show();
+                } else {
+                    // Fallback to generic message if responseText is not valid JSON or doesn't have a message
+                    errorMessageContainer.text(errorMsg).show();
+                }
                 console.error("AJAX Error:", status, error, xhr.responseText);
             }
         });

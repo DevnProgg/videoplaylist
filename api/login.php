@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';
 
-// --- Input Validation ---
+// Input Validation
 if (empty($username) || empty($password)) {
     $response['message'] = 'Username and password cannot be empty.';
     http_response_code(400);
@@ -37,11 +37,11 @@ if (empty($username) || empty($password)) {
     exit();
 }
 
-// --- Database Connection ---
-$conn = require_once '../../includes/db.php';
+// Database Connection
+$conn = require_once __DIR__ . '/../includes/db.php';
 
 try {
-    // --- Query users table for username ---
+    // Query users table for username
     $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error);
@@ -53,9 +53,9 @@ try {
     $stmt->close();
 
     if ($user_data) {
-        // --- Verify password ---
+        // Verify password
         if (password_verify($password, $user_data['password'])) {
-            // --- Start session and store user_id and username ---
+            //Start session and store user_id and username 
             $_SESSION['user_id'] = $user_data['id'];
             $_SESSION['username'] = $user_data['username'];
 
@@ -68,7 +68,8 @@ try {
             http_response_code(401); // Unauthorized
         }
     } else {
-        $response['message'] = 'Invalid credentials.';
+        $response['message'] = 'Account not found. Would you like to sign up?';
+        $response['suggest_signup'] = true; // New flag to indicate sign-up suggestion
         http_response_code(401); // Unauthorized
     }
 

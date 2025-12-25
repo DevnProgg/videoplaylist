@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 
-$video_directory = '../uploads/';
+$video_directory = __DIR__ . '/../uploads/';
 $allowed_extensions = ['mp4', 'webm', 'ogg'];
 
 $response = [
