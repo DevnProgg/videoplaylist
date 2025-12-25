@@ -40,7 +40,7 @@ $(document).ready(function() {
         commentsList.empty().append('<p>Loading comments...</p>'); // Clear and show loading
 
         $.ajax({
-            url: '/videoplaylist/api/v1/comments',
+            url: '/videoplaylist/api/v1/comments', 
             type: 'GET',
             dataType: 'json',
             data: { video_path: videoPath },
@@ -61,12 +61,18 @@ $(document).ready(function() {
                         var commentText = $('<div>').addClass('comment-text').text(comment.comment_text);
                         commentItem.append(commentText);
 
-                        // If comment belongs to current user: add edit/delete buttons
+                        // If comment belongs to current user: add a popup menu with edit/delete options
                         if (CURRENT_USER_ID && comment.user_id == CURRENT_USER_ID) {
-                            var actions = $('<div>').addClass('comment-actions');
-                            actions.append($('<button>').addClass('edit-comment-btn btn').text('Edit'));
-                            actions.append($('<button>').addClass('delete-comment-btn btn').text('Delete'));
-                            commentItem.append(actions);
+                            var optionsContainer = $('<div>').addClass('comment-options-container');
+                            var optionsToggle = $('<i>').addClass('fas fa-ellipsis-v comment-options-toggle'); // Kebab icon
+                            
+                            var optionsMenu = $('<div>').addClass('comment-options-menu').hide();
+                            optionsMenu.append($('<span>').addClass('edit-comment-btn').text('Edit'));
+                            optionsMenu.append($('<span>').addClass('delete-comment-btn').text('Delete'));
+
+                            optionsContainer.append(optionsToggle);
+                            optionsContainer.append(optionsMenu);
+                            commentItem.append(optionsContainer);
                         }
 
                         commentsList.append(commentItem);
@@ -100,7 +106,7 @@ $(document).ready(function() {
         e.preventDefault();
 
         $.ajax({
-            url: '/videoplaylist/api/v1/logout',
+            url:  '/videoplaylist/api/v1/logout',
             type: 'POST',
             dataType: 'json',
             success: function(response) {
@@ -120,8 +126,7 @@ $(document).ready(function() {
     // Playlist Functionality
     // Fetch videos and populate playlist
     $.ajax({
-        url: '/videoplaylist/api/v1/videos',
-        type: 'GET',
+                    url: '/videoplaylist/api/v1/videos',        type: 'GET',
         dataType: 'json',
         success: function(response) {
             if (response.success && response.videos.length > 0) {
@@ -294,7 +299,7 @@ $(document).ready(function() {
         });
     });
 
-    //  Delete Comment Functionality (Event Delegation) 
+    // --- Delete Comment Functionality (Event Delegation) ---
     $(document).on('click', '.delete-comment-btn', function() {
         var $commentItem = $(this).closest('.comment-item');
         var commentId = $commentItem.data('comment-id');
@@ -323,7 +328,32 @@ $(document).ready(function() {
         }
     });
 
-    //  Session Check Functionality (every 5 minutes)
+    // --- Comment Options Menu Toggle ---
+    $(document).on('click', '.comment-options-toggle', function(e) {
+        e.stopPropagation(); // Prevent document click from closing it immediately
+        $('.comment-options-menu').hide(); // Hide all other open menus
+
+        var $menu = $(this).siblings('.comment-options-menu');
+        $menu.toggle(); // Toggle visibility of the clicked menu
+
+        // Position the menu
+        var $toggleButton = $(this);
+        var offset = $toggleButton.offset();
+        $menu.css({
+            position: 'absolute',
+            top: offset.top + $toggleButton.outerHeight(),
+            left: offset.left - $menu.outerWidth() + $toggleButton.outerWidth() // Align right edge
+        });
+    });
+
+    // --- Close Comment Options Menu when clicking outside ---
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.comment-options-container').length) {
+            $('.comment-options-menu').hide();
+        }
+    });
+
+    // --- Session Check Functionality (every 5 minutes) ---
     setInterval(function() {
         $.ajax({
             url: '/videoplaylist/api/v1/check_session',
