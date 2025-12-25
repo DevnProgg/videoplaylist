@@ -1,12 +1,12 @@
-- [ ] Can register new user
-- [ ] Can login with correct credentials
-- [ ] Login fails with wrong password
-- [ ] Redirects to login if not authenticated
-- [ ] Videos load in playlist
-- [ ] Clicking video plays it
-- [ ] Next video auto-plays after current ends
-- [ ] Can post comment when logged in
-- [ ] Comment appears immediately after posting
+- [ ok ] Can register new user
+- [ ok ] Can login with correct credentials
+- [ ok ] Login fails with wrong password
+- [ ok ] Redirects to login if not authenticated
+- [ ok ] Videos load in playlist
+- [ ok ] Clicking video plays it
+- [ ok ] Next video auto-plays after current ends
+- [ ok ] Can post comment when logged in
+- [ ok ] Comment appears immediately after posting
 - [ ] Can edit own comments
 - [ ] Can delete own comments
 - [ ] Cannot edit/delete other users' comments
