@@ -492,3 +492,413 @@ body {
         width: 100%;
     }
 }
+
+/* Comment Item Structure */
+.comment-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #0f0f0f;
+    border-radius: 8px;
+    position: relative;
+}
+
+/* Comment Header - Flex layout for username, timestamp, and options */
+.comment-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    gap: 10px;
+}
+
+.comment-username {
+    font-weight: bold;
+    color: #333;
+}
+
+.comment-timestamp {
+    color: #999;
+    font-size: 0.85em;
+    margin-left: 10px;
+}
+
+.comment-text {
+    color: #555;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* Comment Options Container */
+.comment-options-container {
+    position: relative;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* Three-dot menu icon */
+.comment-options-toggle {
+    cursor: pointer;
+    padding: 8px;
+    color: #666;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+.comment-options-toggle:hover {
+    color: #333;
+}
+
+/* Dropdown Menu */
+.comment-options-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 120px;
+    margin-top: 5px;
+}
+
+.comment-options-menu span {
+    display: block;
+    padding: 10px 15px;
+    cursor: pointer;
+    color: #333;
+    transition: background-color 0.2s;
+    font-size: 14px;
+}
+
+.comment-options-menu span:hover {
+    background-color: #f5f5f5;
+}
+
+.comment-options-menu span:first-child {
+    border-radius: 6px 6px 0 0;
+}
+
+.comment-options-menu span:last-child {
+    border-radius: 0 0 6px 6px;
+}
+
+.edit-comment-btn:hover {
+    background-color: #e3f2fd;
+}
+
+.delete-comment-btn {
+    color: #d32f2f;
+}
+
+.delete-comment-btn:hover {
+    background-color: #ffebee;
+}
+
+/* Edit Mode */
+.edit-comment-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #2196F3;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 80px;
+    margin-bottom: 10px;
+}
+
+.edit-comment-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.edit-comment-actions .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.save-comment-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.save-comment-btn:hover {
+    background-color: #45a049;
+}
+
+.cancel-edit-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.cancel-edit-btn:hover {
+    background-color: #da190b;
+}
+
+/* Notification styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification-success {
+    background: #10b981;
+    color: white;
+}
+
+.notification-error {
+    background: #ef4444;
+    color: white;
+}
+
+.notification-info {
+    background: #3b82f6;
+    color: white;
+}
+
+/* No comments placeholder */
+.no-comments {
+    padding: 2rem;
+    text-align: center;
+    color: rgba(221, 213, 213, 0.5);
+    font-style: italic;
+}
+
+/* Loading comments spinner */
+.loading-comments {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #2196F3;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Comment item improvements */
+.comment-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    position: relative;
+    transition: background-color 0.2s;
+}
+
+.comment-item:hover {
+    background: #f0f0f0;
+}
+
+/* Comment header layout */
+.comment-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    gap: 10px;
+}
+
+.comment-username {
+    font-weight: bold;
+    color: #333;
+}
+
+.comment-timestamp {
+    color: #999;
+    font-size: 0.85em;
+    margin-left: 10px;
+}
+
+.comment-text {
+    color: #555;
+    line-height: 1.5;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+/* Comment options container */
+.comment-options-container {
+    position: relative;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* Three-dot menu icon */
+.comment-options-toggle {
+    cursor: pointer;
+    padding: 8px;
+    color: #666;
+    font-size: 16px;
+    transition: color 0.2s;
+    border-radius: 4px;
+}
+
+.comment-options-toggle:hover {
+    color: #333;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Dropdown menu */
+.comment-options-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 120px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.comment-options-menu span {
+    display: block;
+    padding: 10px 15px;
+    cursor: pointer;
+    color: #333;
+    transition: background-color 0.2s;
+    font-size: 14px;
+}
+
+.comment-options-menu span:hover {
+    background-color: #f5f5f5;
+}
+
+.edit-comment-btn:hover {
+    background-color: #e3f2fd;
+}
+
+.delete-comment-btn {
+    color: #d32f2f;
+}
+
+.delete-comment-btn:hover {
+    background-color: #ffebee;
+}
+
+/* Edit mode */
+.edit-comment-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #2196F3;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 80px;
+    margin-bottom: 10px;
+}
+
+.edit-comment-textarea:focus {
+    outline: none;
+    border-color: #1976D2;
+}
+
+.edit-comment-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.edit-comment-actions .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    font-weight: 500;
+}
+
+.save-comment-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.save-comment-btn:hover:not(:disabled) {
+    background-color: #45a049;
+}
+
+.save-comment-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cancel-edit-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.cancel-edit-btn:hover {
+    background-color: #da190b;
+}
+
+/* Button loading state */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Video info section */
+#video-info {
+    padding: 1rem;
+    background: rgba(33, 150, 243, 0.1);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+#video-message {
+    margin: 0;
+    color: #1976D2;
+    font-weight: 500;
+}
+
+/* Playlist empty state */
+.playlist li[style*="color: rgba(255, 255, 255, 0.5)"] {
+    font-style: italic;
+}
+
+/* Comment count badge */
+.comment-count {
+    color: #666;
+    font-weight: normal;
+    font-size: 0.9em;
+}

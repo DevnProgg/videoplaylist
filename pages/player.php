@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /videoplaylist/auth/');
+    header('Location: /videoplaylist/auth/login');
     exit();
 }
 
@@ -15,7 +15,7 @@ $username = $_SESSION['username'] ?? 'Guest';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Player</title>
     <link rel="stylesheet" href="assets/css/player-style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPYXKCWRyYvJ5XQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script>
         const CURRENT_USER_ID = <?php echo json_encode($_SESSION['user_id'] ?? null); ?>;
@@ -52,11 +52,11 @@ $username = $_SESSION['username'] ?? 'Guest';
                 <div class="comment-form-container">
                     <textarea 
                         id="comment-text" 
-                        maxlength="1000" 
+                        maxlength="500" 
                         placeholder="Share your thoughts..."
                         rows="4"></textarea>
                     <div class="comment-form-footer">
-                        <span class="char-count" id="char-count">0/1000</span>
+                        <span class="char-count" id="char-count">0/500</span>
                         <button id="submit-comment" class="btn comment-btn">Post Comment</button>
                     </div>
                 </div>
@@ -73,7 +73,7 @@ $username = $_SESSION['username'] ?? 'Guest';
         <div class="sidebar">
             <div class="playlist-container">
                 <h2>
-                    <span class="playlist-icon">{}</span>
+                    <span class="playlist-icon">▶</span>
                     <span>Playlist</span>
                 </h2>
                 <ul class="playlist" id="playlist">

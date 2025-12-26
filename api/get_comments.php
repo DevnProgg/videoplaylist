@@ -29,7 +29,7 @@ $conn = require_once __DIR__ . '/../includes/db.php';
 
 try {
     // Query comments table with JOIN to users table
-    $stmt = $conn->prepare("SELECT c.id, u.username, c.comment_text, c.created_at
+    $stmt = $conn->prepare("SELECT c.id, u.username, c.comment_text, c.created_at, c.user_id
                             FROM comments c
                             JOIN users u ON c.user_id = u.id
                             WHERE c.video_path = ?
