@@ -1,3 +1,4 @@
+-- The `comments` table, for storing user comments on videos.
 CREATE TABLE comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     video_path VARCHAR(255) NOT NULL,

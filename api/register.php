@@ -1,8 +1,5 @@
 <?php
-/**
- * User Registration API
- * Accepts username and password, validates, hashes password, and inserts into users table.
- */
+// Handles user registration.
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -13,7 +10,6 @@ $response = [
     'message' => ''
 ];
 
-// Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $response['message'] = 'Invalid request method. Only POST requests are allowed.';
     http_response_code(405);
@@ -21,11 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-// Get POST data
 $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';
 
-//Input Validation
 if (empty($username)) {
     $response['message'] = 'Username cannot be empty.';
     http_response_code(400);
@@ -47,18 +41,17 @@ if (empty($password)) {
     exit();
 }
 
-// Database Connection
 $conn = require_once __DIR__ . '/../includes/db.php';
 
 try {
-    // Check if username already exists
+    // Check if the username is already taken.
     $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error);
     }
     $stmt->bind_param("s", $username);
     $stmt->execute();
-    $stmt->store_result(); // Store result to check num_rows
+    $stmt->store_result();
     if ($stmt->num_rows > 0) {
         $response['message'] = 'Username already exists.';
         http_response_code(409); // Conflict
@@ -69,10 +62,10 @@ try {
     }
     $stmt->close();
 
-    // Hash Password
+    // Hash the password for security.
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // Insert User into Database
+    // Create the new user.
     $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error);

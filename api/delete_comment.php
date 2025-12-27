@@ -1,8 +1,5 @@
 <?php
-/**
- * Delete Comment API
- * Accepts comment_id, checks ownership, and deletes comment.
- */
+// Deletes a comment.
 
 session_start();
 
@@ -15,7 +12,7 @@ $response = [
     'message' => ''
 ];
 
-// Check if user is logged in
+// Make sure the user is logged in.
 if (!isset($_SESSION['user_id'])) {
     $response['message'] = 'User not logged in.';
     http_response_code(401); // Unauthorized
@@ -23,7 +20,6 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $response['message'] = 'Invalid request method. Only POST requests are allowed.';
     http_response_code(405);
@@ -31,11 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-// Get POST data
 $comment_id = $_POST['comment_id'] ?? '';
 $user_id = $_SESSION['user_id'];
 
-// Input Validation
 if (empty($comment_id)) {
     $response['message'] = 'Comment ID cannot be empty.';
     http_response_code(400);
@@ -43,11 +37,10 @@ if (empty($comment_id)) {
     exit();
 }
 
-//Database Connection
 $conn = require_once __DIR__ . '/../includes/db.php';
 
 try {
-    //Check if comment belongs to current user
+    // Make sure the comment belongs to the current user.
     $stmt = $conn->prepare("SELECT user_id FROM comments WHERE id = ?");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error);
@@ -74,7 +67,7 @@ try {
         exit();
     }
 
-    //Delete Comment from Database
+    // Delete the comment.
     $stmt = $conn->prepare("DELETE FROM comments WHERE id = ? AND user_id = ?");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error);

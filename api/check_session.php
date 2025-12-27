@@ -1,8 +1,5 @@
 <?php
-/**
- * Check Session API
- * Checks if a user is logged in and returns relevant session data.
- */
+// Checks if a user is logged in.
 
 session_start();
 

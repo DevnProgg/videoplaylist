@@ -1,27 +1,23 @@
 <?php
-/**
- * Database Connection File
- * Defines constants and establishes a MySQLi connection.
- */
+// Handles the database connection.
 
-// Define database connection constants
+// Database credentials.
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
-define('DB_PASS', '');     
+define('DB_PASS', '');     // Not recommended for production
 define('DB_NAME', 'videoplaylist');
 
-// Create MySQLi connection
+// Create the connection.
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
-// Check connection
+// Make sure the connection is good.
 if ($conn->connect_error) {
-    // In a real application, you might log this error instead of exposing it
+    // In a real app, you'd want to log this error.
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Set charset to utf8mb4
+// Good practice to set the charset.
 $conn->set_charset("utf8mb4");
 
-// This file will return the $conn variable when included.
 return $conn;
 ?>

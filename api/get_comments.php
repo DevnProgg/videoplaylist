@@ -1,8 +1,5 @@
 <?php
-/**
- * Get Comments API
- * Accepts video_path GET parameter, queries comments table, and returns comments.
- */
+// Gets all comments for a given video.
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -14,7 +11,6 @@ $response = [
     'message' => ''
 ];
 
-// Check if video_path GET parameter is provided
 $video_path = $_GET['video_path'] ?? '';
 
 if (empty($video_path)) {
@@ -24,11 +20,10 @@ if (empty($video_path)) {
     exit();
 }
 
-// Database Connection
 $conn = require_once __DIR__ . '/../includes/db.php';
 
 try {
-    // Query comments table with JOIN to users table
+    // Grab all the comments, and join with the users table to get the username.
     $stmt = $conn->prepare("SELECT c.id, u.username, c.comment_text, c.created_at, c.user_id
                             FROM comments c
                             JOIN users u ON c.user_id = u.id

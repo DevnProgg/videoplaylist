@@ -1,8 +1,5 @@
 <?php
-/**
- * Get Videos API
- * Returns list of video files from uploads directory
- */
+// Returns a list of video files from the uploads directory.
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -18,12 +15,10 @@ $response = [
 ];
 
 try {
-    // Check if directory exists
     if (!is_dir($video_directory)) {
         throw new Exception('Video directory not found');
     }
     
-    // Scan directory for video files
     $files = scandir($video_directory);
     $video_files = [];
     
@@ -34,33 +29,30 @@ try {
         
         $file_path = $video_directory . $file;
         
-        // Skip directories
         if (is_dir($file_path)) {
             continue;
         }
         
-        // Get file extension
         $file_info = pathinfo($file);
         $extension = strtolower($file_info['extension'] ?? '');
         
-        // Check if file extension is allowed
         if (in_array($extension, $allowed_extensions)) {
             $video_files[] = [
                 'path' => 'uploads/' . $file,
                 'name' => $file_info['filename'],
-                'extension' => $extension,
+                'extension' => 'mp4',
                 'size' => filesize($file_path),
                 'modified' => filemtime($file_path)
             ];
         }
     }
     
-    // Sort by modification time (newest first)
+    // Sort by modification time, newest first.
     usort($video_files, function($a, $b) {
         return $b['modified'] - $a['modified'];
     });
     
-    // Extract just the paths for backwards compatibility
+    // Just the paths, for backwards compatibility.
     $video_paths = array_map(function($video) {
         return $video['path'];
     }, $video_files);

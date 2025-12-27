@@ -1,4 +1,5 @@
 <?php
+// Make sure the user is logged in.
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -77,7 +78,7 @@ $username = $_SESSION['username'] ?? 'Guest';
                     <span>Playlist</span>
                 </h2>
                 <ul class="playlist" id="playlist">
-                    <!-- Playlist items will be loaded here via AJAX -->
+                    <!-- Playlist items are loaded via AJAX -->
                 </ul>
             </div>
         </div>

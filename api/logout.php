@@ -1,17 +1,12 @@
 <?php
-/**
- * User Logout API
- * Destroys all session data and returns a success message.
- */
+// Logs the user out.
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST'); // Allow both GET and POST for logout for flexibility
+header('Access-Control-Allow-Methods: GET, POST'); // Allow both GET and POST for flexibility
 
-// Start session to access and destroy session data
 session_start();
 
-// Destroy all session data
 session_destroy();
 
 $response = [

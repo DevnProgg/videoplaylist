@@ -1,15 +1,10 @@
 <?php
-/**
- * User Login API
- * Accepts username and password, verifies credentials, starts a session,
- * and returns JSON with success/error message and username.
- */
+// Handles user login.
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 
-// Start session
 session_start();
 
 $response = [
@@ -17,7 +12,6 @@ $response = [
     'message' => ''
 ];
 
-// Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $response['message'] = 'Invalid request method. Only POST requests are allowed.';
     http_response_code(405);
@@ -25,11 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-// Get POST data
 $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';
 
-// Input Validation
 if (empty($username) || empty($password)) {
     $response['message'] = 'Username and password cannot be empty.';
     http_response_code(400);
@@ -37,11 +29,10 @@ if (empty($username) || empty($password)) {
     exit();
 }
 
-// Database Connection
 $conn = require_once __DIR__ . '/../includes/db.php';
 
 try {
-    // Query users table for username
+    // Check if the user exists.
     $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error);
@@ -53,9 +44,9 @@ try {
     $stmt->close();
 
     if ($user_data) {
-        // Verify password
+        // Check if the password is correct.
         if (password_verify($password, $user_data['password'])) {
-            //Start session and store user_id and username 
+            // Start a session.
             $_SESSION['user_id'] = $user_data['id'];
             $_SESSION['username'] = $user_data['username'];
 
@@ -69,7 +60,7 @@ try {
         }
     } else {
         $response['message'] = 'Account not found. Would you like to sign up?';
-        $response['suggest_signup'] = true; // New flag to indicate sign-up suggestion
+        $response['suggest_signup'] = true; // Flag to suggest sign-up
         http_response_code(401); // Unauthorized
     }
 

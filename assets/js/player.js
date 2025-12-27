@@ -3,7 +3,7 @@ $(document).ready(function() {
     var playlist = $('.playlist');
     var commentSection = $('.comment-section');
 
-    // Utility function to escape HTML
+    // A quick and dirty HTML escaper.
     function escapeHtml(text) {
         const map = {
             '&': '&amp;',
@@ -15,7 +15,7 @@ $(document).ready(function() {
         return text.replace(/[&<>"']/g, function(m) { return map[m]; });
     }
 
-    // Show notification
+    // Shows a notification message.
     function showNotification(message, type) {
         const notification = $(`
             <div class="notification notification-${type}">
@@ -37,7 +37,7 @@ $(document).ready(function() {
         }, 3000);
     }
 
-    // Function to format MySQL timestamp to human-readable time ago 
+    // Formats a MySQL timestamp into a human-readable "time ago" string.
     function formatTime(timestamp) {
         var date = new Date(timestamp.replace(/-/g, '/'));
         var now = new Date();
@@ -75,12 +75,11 @@ $(document).ready(function() {
         return Math.floor(seconds) + " seconds ago";
     }
 
-    // Update comment count
     function updateCommentCount(count) {
         $('#comment-count').text('(' + count + ')');
     }
 
-    // Function to load comments for a given video path
+    // Loads the comments for a given video.
     function loadComments(videoPath) {
         var commentsList = commentSection.find('.comments-list');
         commentsList.empty().html(`
@@ -110,8 +109,7 @@ $(document).ready(function() {
                         commentHeader.append($('<span>').addClass('comment-username').text(comment.username));
                         commentHeader.append($('<span>').addClass('comment-timestamp').text(formatTime(comment.created_at)));
                         
-                        // Add options button for owner's comments
-                        // Use loose comparison to handle string/number mismatch
+                        // If the comment belongs to the current user, show the options button.
                         if (CURRENT_USER_ID && comment.user_id == CURRENT_USER_ID) {
                             var optionsContainer = $('<div>').addClass('comment-options-container');
                             var optionsToggle = $('<i>').addClass('fas fa-ellipsis-v comment-options-toggle');
@@ -144,7 +142,7 @@ $(document).ready(function() {
         });
     }
 
-    // Function to play video, highlight item, and load comments
+    // Plays a video, highlights it in the playlist, and loads the comments.
     window.playVideo = function(videoPath, videoName) {
         videoPlayer.attr('src', videoPath);
         videoPlayer[0].load();
@@ -153,14 +151,13 @@ $(document).ready(function() {
         playlist.find('.playlist-item').removeClass('active');
         playlist.find('.playlist-item[data-video-path="' + videoPath + '"]').addClass('active');
 
-        // Show and update video info
         $('#video-info').show();
         $('#video-message').text('Now playing: ' + (videoName || videoPath.split('/').pop()));
 
         loadComments(videoPath);
     };
 
-    // Logout Functionality 
+    // Logout button.
     $('#logout-btn').on('click', function(e) {
         e.preventDefault();
 
@@ -184,7 +181,7 @@ $(document).ready(function() {
         }
     });
 
-    // Fetch videos and populate playlist
+    // Fetch the playlist.
     $.ajax({
         url: '/videoplaylist/api/v1/videos',
         type: 'GET',
@@ -216,14 +213,14 @@ $(document).ready(function() {
         }
     });
 
-    // Handle click on playlist items
+    // Click on a playlist item.
     playlist.on('click', '.playlist-item', function() {
         var videoPath = $(this).attr('data-video-path');
         var videoName = $(this).attr('data-video-name');
         playVideo(videoPath, videoName);
     });
 
-    // Autoplay next video in playlist
+    // Autoplay the next video.
     videoPlayer.on('ended', function() {
         var currentActiveItem = playlist.find('.playlist-item.active');
         var nextItem = currentActiveItem.next('.playlist-item');
@@ -237,7 +234,7 @@ $(document).ready(function() {
         }
     });
 
-    // Comment Submission Functionality
+    // Submit a comment.
     $('#submit-comment').on('click', function() {
         var commentText = $('#comment-text').val();
         var videoPath = videoPlayer.attr('src');
@@ -288,7 +285,7 @@ $(document).ready(function() {
         });
     });
 
-    // Allow Enter key to submit (Shift+Enter for new line)
+    // Use Enter to submit, but Shift+Enter for a new line.
     $('#comment-text').on('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -296,7 +293,7 @@ $(document).ready(function() {
         }
     });
 
-    // Character Counter for Comment Textarea
+    // Character counter for the comment textarea.
     $('#comment-text').on('input', function() {
         var currentLength = $(this).val().length;
         var maxLength = 500;
@@ -314,26 +311,24 @@ $(document).ready(function() {
         }
     });
 
-    // Comment Options Menu Toggle
+    // Toggle the comment options menu.
     $(document).on('click', '.comment-options-toggle', function(e) {
         e.stopPropagation();
         
-        // Hide all other menus
         $('.comment-options-menu').not($(this).siblings('.comment-options-menu')).hide();
         
-        // Toggle this menu
         var $menu = $(this).siblings('.comment-options-menu');
         $menu.toggle();
     });
 
-    // Close menu when clicking outside
+    // Close the menu when clicking anywhere else.
     $(document).on('click', function(e) {
         if (!$(e.target).closest('.comment-options-container').length) {
             $('.comment-options-menu').hide();
         }
     });
 
-    // Edit Comment Functionality
+    // Edit a comment.
     $(document).on('click', '.edit-comment-btn', function() {
         var $commentItem = $(this).closest('.comment-item');
         var commentId = $commentItem.data('comment-id');
@@ -341,29 +336,25 @@ $(document).ready(function() {
         var currentCommentText = $commentTextDiv.text();
         var videoPath = videoPlayer.attr('src');
 
-        // Hide the menu
         $(this).closest('.comment-options-menu').hide();
 
-        // Replace comment text with textarea
         var $textarea = $('<textarea>')
             .addClass('edit-comment-textarea')
             .val(currentCommentText)
             .attr('maxlength', 500);
         $commentTextDiv.replaceWith($textarea);
 
-        // Add save/cancel buttons
         var $editActions = $('<div>').addClass('edit-comment-actions');
         $editActions.append($('<button>').addClass('save-comment-btn btn').text('Save'));
         $editActions.append($('<button>').addClass('cancel-edit-btn btn').text('Cancel'));
         $commentItem.append($editActions);
 
-        // Hide the options container during edit
         $commentItem.find('.comment-options-container').hide();
 
         $textarea.focus();
     });
 
-    // Save edited comment
+    // Save an edited comment.
     $(document).on('click', '.save-comment-btn', function() {
         var $commentItem = $(this).closest('.comment-item');
         var commentId = $commentItem.data('comment-id');
@@ -409,19 +400,18 @@ $(document).ready(function() {
         });
     });
 
-    // Cancel edit
+    // Cancel an edit.
     $(document).on('click', '.cancel-edit-btn', function() {
         var videoPath = videoPlayer.attr('src');
         loadComments(videoPath);
     });
 
-    // Delete Comment Functionality
+    // Delete a comment.
     $(document).on('click', '.delete-comment-btn', function() {
         var $commentItem = $(this).closest('.comment-item');
         var commentId = $commentItem.data('comment-id');
         var videoPath = videoPlayer.attr('src');
 
-        // Hide the menu
         $(this).closest('.comment-options-menu').hide();
 
         if (confirm('Are you sure you want to delete this comment?')) {
@@ -448,7 +438,7 @@ $(document).ready(function() {
         }
     });
 
-    // Session Check Functionality (every 5 minutes)
+    // Check the session every 5 minutes to make sure the user is still logged in.
     setInterval(function() {
         $.ajax({
             url: '/videoplaylist/api/v1/check_session',
@@ -467,7 +457,7 @@ $(document).ready(function() {
         });
     }, 300000);
 
-    // Initial state
+    // Set the initial state of the page.
     $('#video-info').show();
     $('#video-message').text('Select a video to play');
     $('#comments-list').html('<div class="no-comments">Select a video to view comments</div>');

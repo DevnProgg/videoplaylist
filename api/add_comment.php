@@ -1,8 +1,5 @@
 <?php
-/**
- * Add Comment API
- * Accepts video_path and comment_text, inserts into comments table with user_id.
- */
+// Adds a comment to a video.
 
 session_start();
 
@@ -15,7 +12,7 @@ $response = [
     'message' => ''
 ];
 
-// Check if user is logged in
+// Make sure the user is logged in.
 if (!isset($_SESSION['user_id'])) {
     $response['message'] = 'User not logged in.';
     http_response_code(401); // Unauthorized
@@ -23,7 +20,6 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $response['message'] = 'Invalid request method. Only POST requests are allowed.';
     http_response_code(405);
@@ -31,12 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-// Get POST data
 $video_path = $_POST['video_path'] ?? '';
 $comment_text = trim($_POST['comment_text'] ?? '');
 $user_id = $_SESSION['user_id'];
 
-// Input Validation
+// A little validation...
 if (empty($video_path)) {
     $response['message'] = 'Video path cannot be empty.';
     http_response_code(400);
@@ -58,11 +53,10 @@ if (strlen($comment_text) > 500) {
     exit();
 }
 
-//Database Connection
 $conn = require_once __DIR__ . '/../includes/db.php';
 
 try {
-    // Insert Comment into Database
+    // Add the comment to the database.
     $stmt = $conn->prepare("INSERT INTO comments (video_path, user_id, comment_text) VALUES (?, ?, ?)");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error);
