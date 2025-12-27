@@ -7,8 +7,8 @@
 - [ ok ] Next video auto-plays after current ends
 - [ ok ] Can post comment when logged in
 - [ ok ] Comment appears immediately after posting
-- [ ] Can edit own comments
-- [ ] Can delete own comments
-- [ ] Cannot edit/delete other users' comments
-- [ ] Character counter updates while typing
-- [ ] Logout works correctly
+- [ ok ] Can edit own comments
+- [ ok ] Can delete own comments
+- [ ok ] Cannot edit/delete other users' comments
+- [ ok ] Character counter updates while typing
+- [ ok ] Logout works correctly
