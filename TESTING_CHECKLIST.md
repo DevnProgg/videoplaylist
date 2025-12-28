@@ -11,4 +11,8 @@
 - [ ok ] Can delete own comments
 - [ ok ] Cannot edit/delete other users' comments
 - [ ok ] Character counter updates while typing
+- [ ] Liking a comment updates the like count.
+- [ ] The like button stays active after refreshing the page.
+- [ ] Can reply to a comment.
+- [ ] The reply appears immediately after posting.
 - [ ok ] Logout works correctly
