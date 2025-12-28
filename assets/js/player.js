@@ -327,16 +327,35 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     showNotification('Reply posted successfully!', 'success');
-                    // Reload comments to show updated reply count
-                    var videoPath = videoPlayer.attr('src');
-                    loadComments(videoPath);
+                    $textarea.val(''); // Clear the textarea
+                    
+                    var $replySection = $('.reply-section[data-comment-id="' + commentId + '"]');
+                    $replySection.show(); // Make sure the section is visible
+                    loadReplies(commentId, $replySection); // Reload the replies
+
+                    // Update the reply count button
+                    var $viewRepliesBtn = $replySection.closest('.comment-item').find('.view-replies-btn');
+                    var replyCount = $viewRepliesBtn.length ? (parseInt($viewRepliesBtn.text().match(/\d+/)?.[0] || 0) + 1) : 1;
+                    
+                    if ($viewRepliesBtn.length) {
+                        $viewRepliesBtn.html('<i class="fas fa-comments"></i> View ' + replyCount + ' ' + (replyCount === 1 ? 'reply' : 'replies'));
+                    } else {
+                        var $commentActions = $replySection.closest('.comment-item').find('.comment-actions');
+                        var newBtn = $('<button>')
+                            .addClass('view-replies-btn')
+                            .attr('data-comment-id', commentId)
+                            .html('<i class="fas fa-comments"></i> View 1 reply');
+                        $commentActions.append(newBtn);
+                    }
+
                 } else {
                     showNotification('Error: ' + response.message, 'error');
-                    $btn.prop('disabled', false).text('Reply');
                 }
             },
             error: function() {
                 showNotification('An error occurred while posting reply.', 'error');
+            },
+            complete: function() {
                 $btn.prop('disabled', false).text('Reply');
             }
         });
