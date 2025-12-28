@@ -3,7 +3,6 @@ $(document).ready(function() {
     var playlist = $('.playlist');
     var commentSection = $('.comment-section');
 
-    // A quick and dirty HTML escaper.
     function escapeHtml(text) {
         const map = {
             '&': '&amp;',
@@ -79,6 +78,46 @@ $(document).ready(function() {
         $('#comment-count').text('(' + count + ')');
     }
 
+    // Loads replies for a given comment
+    function loadReplies(commentId, $repliesContainer) {
+        $repliesContainer.html('<div class="loading-replies">Loading replies...</div>');
+
+        $.ajax({
+            url: '/videoplaylist/api/v1/comment/replies',
+            type: 'GET',
+            dataType: 'json',
+            data: { comment_id: commentId },
+            success: function(response) {
+                $repliesContainer.empty();
+
+                if (response.success && response.replies.length > 0) {
+                    var $repliesList = $('<div>').addClass('replies-list');
+                    
+                    response.replies.forEach(function(reply) {
+                        var $replyItem = $('<div>').addClass('reply-item');
+                        
+                        var $replyHeader = $('<div>').addClass('reply-header');
+                        $replyHeader.append($('<span>').addClass('reply-username').text(reply.username));
+                        $replyHeader.append($('<span>').addClass('reply-timestamp').text(formatTime(reply.created_at)));
+                        
+                        var $replyText = $('<div>').addClass('reply-text').text(reply.reply_text);
+                        
+                        $replyItem.append($replyHeader);
+                        $replyItem.append($replyText);
+                        $repliesList.append($replyItem);
+                    });
+                    
+                    $repliesContainer.append($repliesList);
+                } else {
+                    $repliesContainer.html('<div class="loading-replies">No replies yet.</div>');
+                }
+            },
+            error: function() {
+                $repliesContainer.html('<div class="loading-replies" style="color: #ef4444;">Error loading replies</div>');
+            }
+        });
+    }
+
     // Loads the comments for a given video.
     function loadComments(videoPath) {
         var commentsList = commentSection.find('.comments-list');
@@ -128,6 +167,46 @@ $(document).ready(function() {
                         var commentText = $('<div>').addClass('comment-text').text(comment.comment_text);
                         commentItem.append(commentText);
 
+                        // Add comment actions (like and reply)
+                        var commentActions = $('<div>').addClass('comment-actions');
+                        
+                        // Like button
+                        var likeBtn = $('<button>')
+                            .addClass('like-btn')
+                            .attr('data-comment-id', comment.id)
+                            .html('<i class="' + (comment.user_has_liked ? 'fas' : 'far') + ' fa-heart"></i> <span class="like-count">' + comment.like_count + '</span>');
+                        
+                        if (comment.user_has_liked) {
+                            likeBtn.addClass('liked');
+                        }
+                        
+                        // Reply button
+                        var replyBtn = $('<button>')
+                            .addClass('reply-btn')
+                            .attr('data-comment-id', comment.id)
+                            .html('<i class="fas fa-reply"></i> Reply');
+                        
+                        commentActions.append(likeBtn);
+                        commentActions.append(replyBtn);
+                        
+                        // View replies button if there are replies
+                        if (parseInt(comment.reply_count) > 0) {
+                            var viewRepliesBtn = $('<button>')
+                                .addClass('view-replies-btn')
+                                .attr('data-comment-id', comment.id)
+                                .html('<i class="fas fa-comments"></i> View ' + comment.reply_count + ' ' + (comment.reply_count == 1 ? 'reply' : 'replies'));
+                            commentActions.append(viewRepliesBtn);
+                        }
+                        
+                        commentItem.append(commentActions);
+                        
+                        // Container for reply form and replies list
+                        var replySection = $('<div>')
+                            .addClass('reply-section')
+                            .attr('data-comment-id', comment.id)
+                            .hide();
+                        commentItem.append(replySection);
+
                         commentsList.append(commentItem);
                     });
                 } else {
@@ -141,6 +220,145 @@ $(document).ready(function() {
             }
         });
     }
+
+    // Toggle like on a comment
+    $(document).on('click', '.like-btn', function() {
+        var $btn = $(this);
+        var commentId = $btn.attr('data-comment-id');
+        var $icon = $btn.find('i');
+        var $count = $btn.find('.like-count');
+
+        $.ajax({
+            url: '/videoplaylist/api/v1/comment/like',
+            type: 'POST',
+            dataType: 'json',
+            data: { comment_id: commentId },
+            success: function(response) {
+                if (response.success) {
+                    $count.text(response.like_count);
+                    
+                    if (response.liked) {
+                        $icon.removeClass('far').addClass('fas');
+                        $btn.addClass('liked');
+                    } else {
+                        $icon.removeClass('fas').addClass('far');
+                        $btn.removeClass('liked');
+                    }
+                } else {
+                    showNotification('Error: ' + response.message, 'error');
+                }
+            },
+            error: function() {
+                showNotification('An error occurred while liking the comment.', 'error');
+            }
+        });
+    });
+
+    // Show reply form
+    $(document).on('click', '.reply-btn', function() {
+        var commentId = $(this).attr('data-comment-id');
+        var $replySection = $('.reply-section[data-comment-id="' + commentId + '"]');
+        
+        // Close other reply sections
+        $('.reply-section').not($replySection).hide().empty();
+        
+        if ($replySection.is(':visible')) {
+            $replySection.hide().empty();
+        } else {
+            // Create reply form
+            var $replyForm = $('<div>').addClass('reply-form');
+            var $textarea = $('<textarea>')
+                .addClass('reply-textarea')
+                .attr('placeholder', 'Write a reply...')
+                .attr('maxlength', '500');
+            
+            var $formActions = $('<div>').addClass('reply-form-actions');
+            var $submitBtn = $('<button>')
+                .addClass('reply-submit-btn')
+                .text('Reply')
+                .attr('data-comment-id', commentId);
+            var $cancelBtn = $('<button>')
+                .addClass('reply-cancel-btn')
+                .text('Cancel');
+            
+            $formActions.append($cancelBtn);
+            $formActions.append($submitBtn);
+            
+            $replyForm.append($textarea);
+            $replyForm.append($formActions);
+            
+            $replySection.empty().append($replyForm).show();
+            $textarea.focus();
+        }
+    });
+
+    // Cancel reply
+    $(document).on('click', '.reply-cancel-btn', function() {
+        $(this).closest('.reply-section').hide().empty();
+    });
+
+    // Submit reply
+    $(document).on('click', '.reply-submit-btn', function() {
+        var $btn = $(this);
+        var commentId = $btn.attr('data-comment-id');
+        var $textarea = $btn.closest('.reply-form').find('.reply-textarea');
+        var replyText = $textarea.val().trim();
+
+        if (!replyText) {
+            showNotification('Reply cannot be empty.', 'error');
+            return;
+        }
+
+        if (replyText.length > 500) {
+            showNotification('Reply cannot exceed 500 characters.', 'error');
+            return;
+        }
+
+        $btn.prop('disabled', true).text('Posting...');
+
+        $.ajax({
+            url: '/videoplaylist/api/v1/comment/reply/add',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                comment_id: commentId,
+                reply_text: replyText
+            },
+            success: function(response) {
+                if (response.success) {
+                    showNotification('Reply posted successfully!', 'success');
+                    // Reload comments to show updated reply count
+                    var videoPath = videoPlayer.attr('src');
+                    loadComments(videoPath);
+                } else {
+                    showNotification('Error: ' + response.message, 'error');
+                    $btn.prop('disabled', false).text('Reply');
+                }
+            },
+            error: function() {
+                showNotification('An error occurred while posting reply.', 'error');
+                $btn.prop('disabled', false).text('Reply');
+            }
+        });
+    });
+
+    // View replies
+    $(document).on('click', '.view-replies-btn', function() {
+        var commentId = $(this).attr('data-comment-id');
+        var $replySection = $('.reply-section[data-comment-id="' + commentId + '"]');
+        
+        if ($replySection.is(':visible') && $replySection.find('.replies-list').length > 0) {
+            // Hide replies if already showing
+            $replySection.hide().empty();
+        } else {
+            // Close other reply sections
+            $('.reply-section').not($replySection).hide().empty();
+            
+            // Show this reply section and load replies
+            $replySection.show();
+            loadReplies(commentId, $replySection);
+        }
+    });
 
     // Plays a video, highlights it in the playlist, and loads the comments.
     window.playVideo = function(videoPath, videoName) {
@@ -350,6 +568,7 @@ $(document).ready(function() {
         $commentItem.append($editActions);
 
         $commentItem.find('.comment-options-container').hide();
+        $commentItem.find('.comment-actions').hide();
 
         $textarea.focus();
     });
